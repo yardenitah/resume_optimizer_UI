@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import JobCard from '../components/JobCard.jsx';
+import { FiInfo } from 'react-icons/fi'; // Import the Info icon
 
 function Jobs() {
   const [jobs, setJobs] = useState([]);
+  const [selectedJob, setSelectedJob] = useState(null);
   const [jobTitle, setJobTitle] = useState('');
   const [companyName, setCompanyName] = useState('');
   const [jobDescription, setJobDescription] = useState('');
@@ -10,8 +13,8 @@ function Jobs() {
   // For LinkedIn search
   const [linkedinUsername, setLinkedinUsername] = useState('');
   const [linkedinPassword, setLinkedinPassword] = useState('');
-  const [experienceLevel, setExperienceLevel] = useState('No Filter'); // Default is "No Filter"
-  const [jobTitles, setJobTitles] = useState(''); // Comma-separated string
+  const [experienceLevel, setExperienceLevel] = useState('No Filter');
+  const [jobTitles, setJobTitles] = useState('');
   const [maxJobs, setMaxJobs] = useState(10);
 
   const token = localStorage.getItem('token');
@@ -113,6 +116,46 @@ function Jobs() {
     <div>
       <h2>My Saved Jobs</h2>
 
+      <button className="btn btn-danger mb-3 mt-4" onClick={handleDeleteAllJobs}>
+        Delete All My Jobs
+      </button>
+
+      {/* Job List */}
+      <ul className="list-group mb-5">
+        {jobs.map((job) => (
+          <li
+            className="list-group-item d-flex justify-content-between align-items-center"
+            key={job._id}
+            onClick={() => setSelectedJob(job)}
+            style={{ cursor: 'pointer' }}
+          >
+            <div className="d-flex align-items-center">
+              <FiInfo className="me-2 text-primary" /> {/* Info icon */}
+              <strong>{job.job_title}</strong> at {job.company_name}
+            </div>
+            <button
+              className="btn btn-sm btn-danger"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleDeleteJob(job._id);
+              }}
+            >
+              Delete
+            </button>
+          </li>
+        ))}
+      </ul>
+
+      {/* Job Details */}
+      {selectedJob && (
+        <JobCard
+          job={selectedJob}
+          onClose={() => setSelectedJob(null)}
+          token={token}
+        />
+      )}
+
+      {/* Save Job Form */}
       <form onSubmit={handleSaveJob} className="my-3">
         <div className="mb-3">
           <label>Job Title:</label>
@@ -144,27 +187,6 @@ function Jobs() {
           Save Job
         </button>
       </form>
-
-      <button className="btn btn-danger mb-3" onClick={handleDeleteAllJobs}>
-        Delete All My Jobs
-      </button>
-
-      <ul className="list-group">
-        {jobs.map((job) => (
-          <li className="list-group-item d-flex justify-content-between" key={job._id}>
-            <div>
-              <strong>{job.job_title}</strong> at {job.company_name} <br />
-              <em>{job.job_description?.substring(0, 80)}...</em>
-            </div>
-            <button
-              className="btn btn-sm btn-danger"
-              onClick={() => handleDeleteJob(job._id)}
-            >
-              Delete
-            </button>
-          </li>
-        ))}
-      </ul>
 
       {/* LinkedIn Search Form */}
       <hr />
@@ -211,7 +233,7 @@ function Jobs() {
           />
         </div>
         <div className="mb-3">
-          <label>Max Number of Jobs to Search:</label>
+          <label>Max Number of Jobs to Search (1-25):</label>
           <input
             className="form-control"
             type="number"

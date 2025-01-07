@@ -7,19 +7,19 @@ function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleLogin = async (e) => {
-    e.preventDefault(); // Prevent form submission
-  
-    try {
-      const { data } = await axios.post('http://127.0.0.1:8000/users/login', { email, password });
-      localStorage.setItem('token', `Bearer ${data.access_token}`); // Save token
-      navigate('/dashboard'); // Redirect on success
-    } catch (err) {
-      console.error('Login error:', err.response?.data || err.message); // Debugging log
-      alert(err.response?.data?.detail || 'Login failed. Please check your credentials.');
-    }
-  };
-  
+ const handleLogin = async (e) => {
+  e.preventDefault(); // Prevent form submission
+
+  try {
+    const { data } = await axios.post('http://127.0.0.1:8000/users/login', { email, password });
+    localStorage.setItem('token', `Bearer ${data.access_token}`); // Save token
+    navigate('/dashboard'); // Redirect on success
+  } catch (err) {
+    console.error('Login error:', err.response?.data || err.message); // Debugging log
+    alert(err.response?.data?.detail || 'Login failed. Please check your credentials.');
+  }
+};
+
   
   
 
