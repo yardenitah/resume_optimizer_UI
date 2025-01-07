@@ -1,0 +1,48 @@
+/* Navbar Container */
+.navbar {
+    background-color: #343a40; /* Dark background color */
+  }
+  
+  /* Navbar Brand (Logo) */
+  .navbar-brand {
+    color: #948d8d !important; /* Gold color for the brand */
+    font-weight: bold;
+    font-size: 1.5rem;
+    padding-left: 14px;
+  }
+  
+  .navbar-brand:hover {
+    color: #fff !important; /* White on hover */
+  }
+  
+  /* Navbar Text (Hello User) */
+  .navbar-text {
+    color: #647e84; /* Gold color */
+    font-weight: bold;
+    padding-right: 50px;
+    font-size: 1.1rem;
+    margin-top: 5px; /* Moves the text down slightly */
+  }
+  
+  /* Navbar Links */
+  .nav-item .nav-link {
+    color: #ffffff !important; /* White for nav links */
+    font-size: 1rem;
+    transition: color 0.3s ease;
+  }
+  
+  .nav-item .nav-link:hover {
+    color: #96633c !important; /* Gold on hover */
+  }
+  
+  /* Logout Button */
+  .nav-item .btn-outline-light {
+    color: #ffffff; /* White text for the button */
+    border-color: #ffffff; /* White border */
+  }
+  
+  .nav-item .btn-outline-light:hover {
+    background-color: #ffc107; /* Gold background on hover */
+    color: #343a40; /* Dark text */
+  }
+  
