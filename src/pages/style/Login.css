@@ -1,0 +1,58 @@
+/* src/components/style/Login.css */
+
+/* Form Styling */
+.login-form {
+  max-width: 500px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.login-form:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* Input Fields Styling */
+.login-form .form-control {
+  border-radius: 0.5rem;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.login-form .form-control:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+/* Password Toggle Button Styling */
+.password-toggle-btn {
+  border: none;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 0.75rem;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.password-toggle-btn:hover {
+  color: #007bff;
+}
+
+/* Submit Button Styling */
+.login-form .btn-primary {
+  background-color: #007bff;
+  border-color: #007bff;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.login-form .btn-primary:hover {
+  background-color: #0056b3;
+  border-color: #004085;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 576px) {
+  .login-form {
+    padding: 2rem;
+  }
+}

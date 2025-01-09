@@ -17,7 +17,7 @@
   
   /* Navbar Text (Hello User) */
   .navbar-text {
-    color: #647e84; /* Gold color */
+    color: #948d8d !important; /* Gold color for the brand */
     font-weight: bold;
     padding-right: 50px;
     font-size: 1.1rem;

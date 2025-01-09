@@ -1,0 +1,323 @@
+/* General Styles */
+body {
+  background-color: #f8f9fa; /* Light background for better contrast */
+  font-family: Arial, sans-serif;
+}
+
+h2 {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #343a40;
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+/* Resumes Container */
+.resumes-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* Resumes Section */
+.resumes-section {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+/* Resume List Wrapper */
+.resume-list-wrapper {
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Search and Add Controls */
+.resume-controls {
+  margin-bottom: 15px;
+}
+
+.search-resume-form {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.search-icon {
+  position: absolute;
+  left: 10px;
+  color: #6c757d;
+}
+
+.search-input {
+  flex: 1;
+  padding: 8px 12px 8px 35px; /* Padding left to accommodate search icon */
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+}
+
+.clear-icon {
+  margin-left: 10px;
+  color: #6c757d;
+  cursor: pointer;
+}
+
+.search-button {
+  margin-left: 10px;
+  padding: 8px 12px;
+  border: none;
+  background-color: #6c757d;
+  color: #ffffff;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.search-button:hover {
+  background-color: #5a6268;
+}
+
+/* Resumes List */
+.list-group.resumes-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.list-group-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #ffffff;
+  border: none;
+  margin-bottom: 10px;
+  border-radius: 8px;
+  padding: 12px 16px;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.05);
+  transition: background-color 0.3s ease;
+}
+
+.list-group-item:hover {
+  background-color: #f1f1f1; /* Light hover effect */
+}
+
+.resume-info {
+  display: flex;
+  align-items: center;
+}
+
+.resume-info strong {
+  margin-left: 8px;
+  color: #343a40;
+}
+
+.resume-actions button {
+  border: none;
+  background: none;
+  margin-left: 8px;
+  cursor: pointer;
+  color: #343a40;
+  transition: color 0.3s ease;
+}
+
+.resume-actions button:hover {
+  color: #007bff;
+}
+
+/* Add Resume */
+.add-resume-container {
+  margin-top: 20px;
+  text-align: left;
+}
+
+.add-resume-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.upload-form {
+  margin-top: 20px;
+  background-color: #f8f9fa;
+  padding: 15px;
+  border-radius: 8px;
+  border: 1px solid #ced4da;
+}
+
+.upload-buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.upload-buttons .btn {
+  flex: 1;
+}
+
+.upload-buttons .btn-secondary {
+  background-color: #6c757d;
+}
+
+.upload-buttons .btn-secondary:hover {
+  background-color: #5a6268;
+}
+
+.upload-buttons .btn-success:hover {
+  background-color: #218838;
+}
+
+/* Additional Functionalities */
+.additional-functions {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  margin-top: 40px;
+}
+
+/* Best-Match Section */
+.best-match-section {
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.best-match-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.best-match-form label {
+  font-weight: bold;
+  color: #343a40;
+}
+
+.best-match-form .form-control {
+  padding: 8px 12px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+}
+
+.best-match-buttons {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.best-match-buttons .btn {
+  flex: 1;
+}
+
+.best-match-buttons .reset-icon {
+  cursor: pointer;
+  color: #dc3545;
+  font-size: 1.2rem;
+  transition: color 0.3s ease;
+}
+
+.best-match-buttons .reset-icon:hover {
+  color: #a71d2a;
+}
+
+/* Analyze Resume Section */
+.analyze-resume-section {
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.analyze-resume-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.analyze-resume-form label {
+  font-weight: bold;
+  color: #343a40;
+}
+
+.analyze-resume-form .form-control {
+  padding: 8px 12px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+}
+
+.analyze-buttons {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.analyze-buttons .btn {
+  flex: 1;
+}
+
+.analyze-buttons .reset-icon {
+  cursor: pointer;
+  color: #dc3545;
+  font-size: 1.2rem;
+  transition: color 0.3s ease;
+}
+
+.analyze-buttons .reset-icon:hover {
+  color: #a71d2a;
+}
+
+/* Alerts */
+.alert {
+  margin-top: 20px;
+  border-radius: 8px;
+  padding: 20px;
+}
+
+.alert-success {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.alert-info {
+  background-color: #d1ecf1;
+  color: #0c5460;
+}
+
+.alert strong {
+  font-weight: bold;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .resumes-section {
+    flex-direction: column;
+  }
+
+  .resume-list-wrapper,
+  .additional-functions > div {
+    width: 100%;
+  }
+
+  .search-resume-form {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .search-button {
+    margin-left: 0;
+    margin-top: 8px;
+  }
+
+  .best-match-buttons,
+  .analyze-buttons {
+    flex-direction: column;
+  }
+
+  .best-match-buttons .reset-icon,
+  .analyze-buttons .reset-icon {
+    align-self: flex-end;
+    margin-top: 10px;
+  }
+}
