@@ -1,54 +1,42 @@
 /* Jobs.css */
 
-/* General Styles */
-body {
-  background-color: #f8f9fa; /* Light background for better contrast */
-  font-family: Arial, sans-serif;
-}
-
-h2 {
-  font-size: 2rem;
-  font-weight: bold;
-  color: #343a40;
-  text-align: center;
-  margin-bottom: 1.5rem;
-}
-
-/* Jobs Container */
+/* Container for the entire Jobs page */
 .jobs-container {
-  max-width: 1200px;
+  max-width: 1200px; /* or your preferred max-width */
   margin: 0 auto;
   padding: 20px;
 }
 
-/* Jobs Container Card Styles */
-.jobs-container .card {
-  background-color: #ffffff;
+/* Make the search & filter card smaller, remove spacing below */
+.search-filter-card {
+  margin-bottom: 0 !important; /* No space between search bar and list */
+  border: none;
   border-radius: 8px;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1);
 }
 
-/* Form Labels */
-.jobs-container .form-label {
-  font-weight: bold;
-  color: #343a40;
+/* Tighter card header & body for smaller design */
+.search-filter-card .card-header {
+  background-color: #f8f9fa;
+  font-size: 0.95rem;
+  padding: 10px 16px;
 }
 
-/* Form Controls */
-.jobs-container .form-control {
-  padding: 8px 12px;
-  border: 1px solid #ced4da;
-  border-radius: 4px;
+.search-filter-card .card-body {
+  padding: 10px 16px;
 }
 
-/* Form Text */
-.jobs-container .form-text {
-  margin-top: 0.25rem;
+/* Make form controls smaller for the search bar */
+.search-filter-card .form-control {
+  height: calc(1.95rem + 2px);
   font-size: 0.875rem;
-  color: #6c757d;
 }
 
-/* Job List Wrapper */
+.search-filter-card .input-group-text {
+  padding: 0.25rem 0.5rem;
+}
+
+/* Style for the job list wrapper */
 .job-list-wrapper {
   background-color: #ffffff;
   padding: 20px;
@@ -56,176 +44,58 @@ h2 {
   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* Job List */
+/* The actual list of jobs (ul element) */
 .jobs-list {
-  list-style: none;
-  padding: 0;
+  max-height: 400px; /* Limit the list's visible height */
+  overflow-y: auto; /* Enable vertical scrolling if needed */
   margin: 0;
+  padding: 0;
+  list-style-type: none;
 }
 
-/* List Group Item */
-.list-group-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+/* Individual job items */
+.jobs-list .list-group-item {
   background-color: #ffffff;
-  border: none;
   margin-bottom: 10px;
   border-radius: 8px;
   padding: 12px 16px;
+  border: none;
   box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.05);
   transition: background-color 0.3s ease;
 }
 
-.list-group-item:hover {
-  background-color: #f1f1f1; /* Light hover effect */
-}
-
-/* Job Info */
-.job-info {
-  display: flex;
-  align-items: center;
-}
-
-.job-info strong {
-  margin-left: 8px;
-  color: #343a40;
-}
-
-/* Job Actions */
-.job-actions button {
-  border: none;
-  background: none;
-  margin-left: 8px;
-  cursor: pointer;
-  color: #343a40;
-  transition: color 0.3s ease;
-}
-
-.job-actions button:hover {
-  color: #007bff;
-}
-
-/* Add Job */
-.add-job-container {
-  margin-top: 20px;
-  text-align: left;
-}
-
-.add-job-button {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-/* Upload Form */
-.upload-form {
-  margin-top: 20px;
+.jobs-list .list-group-item:hover {
   background-color: #f8f9fa;
-  padding: 15px;
+}
+
+/* Additional card styling (e.g., for LinkedIn search card) */
+.card {
+  border: none;
   border-radius: 8px;
-  border: 1px solid #ced4da;
+  box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1);
 }
 
-.upload-form .mb-3 label {
-  font-weight: bold;
-  color: #343a40;
-}
-
-.upload-buttons {
-  display: flex;
-  gap: 10px;
-  margin-top: 10px;
-}
-
-.upload-buttons .btn {
-  flex: 1;
-}
-
-.upload-buttons .btn-secondary {
-  background-color: #6c757d;
-  border: none;
-}
-
-.upload-buttons .btn-secondary:hover {
-  background-color: #5a6268;
-}
-
-.upload-buttons .btn-success {
-  background-color: #28a745;
-  border: none;
-}
-
-.upload-buttons .btn-success:hover {
-  background-color: #218838;
-}
-
-/* LinkedIn Search Form */
-.jobs-container .card-header {
-  display: flex;
-  align-items: center;
-  font-weight: bold;
-  color: #343a40;
-}
-
-.jobs-container .card-header .faLinkedin {
-  font-size: 1.5rem;
-  color: #0077b5;
-}
-
-.jobs-container .card-header .faSearch {
-  margin-left: 10px;
-}
-
-.jobs-container .faSearch {
-  color: #6c757d;
-}
-
-.jobs-container .faTimes {
-  color: #6c757d;
-  cursor: pointer;
-  margin-left: 10px;
-}
-
-.jobs-container .faTimes:hover {
-  color: #343a40;
-}
-
-/* Delete All Button */
-.jobs-container .d-flex.justify-content-end.mt-3 .btn {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-/* Modal Styles */
-.modal-body p {
-  margin-bottom: 1rem;
-}
-
-.modal-body .btn {
+/* Bottom row of action buttons in job list */
+.job-list-buttons {
   margin-top: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* "Add Job" on left, "Delete All" on right */
+  gap: 1rem;
 }
 
-/* Responsive Design */
+/* Responsive design: reduce card spacing on smaller screens */
 @media (max-width: 768px) {
-  .jobs-container .form-group {
-    flex-direction: column;
+  .jobs-list {
+    max-height: 300px; /* Possibly reduce on smaller screens */
   }
 
-  .jobs-container .search-button,
-  .jobs-container .clear-button {
-    width: 100%;
-    margin-top: 8px;
+  .search-filter-card .form-control {
+    font-size: 0.8rem;
+    height: calc(1.8rem + 2px);
   }
 
-  .job-actions {
-    display: flex;
-    gap: 8px;
-  }
-
-  .add-job-button {
-    width: 100%;
-    justify-content: center;
+  .search-filter-card .input-group-text {
+    padding: 0.2rem 0.4rem;
   }
 }

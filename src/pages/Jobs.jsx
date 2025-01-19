@@ -1,17 +1,18 @@
 // src/components/Jobs.jsx
 import React, { useEffect, useState } from "react";
-import axiosInstance from "../utils/axiosInstance"; // Use the custom axios instance
+import axiosInstance from "../utils/axiosInstance";
 import JobCard from "../components/JobCard.jsx";
-
 import {
   FaInfoCircle,
   FaTrash,
   FaPlus,
   FaSearch,
   FaTimes,
-  FaLinkedin, // Import LinkedIn icon
+  FaLinkedin,
+  FaCopy, // Import FaCopy icon
+  FaCheck, // Import FaCheck icon
 } from "react-icons/fa";
-import "./style/Jobs.css";
+import "./style/Jobs.css"; // Ensure this CSS is imported
 import {
   Modal,
   Button,
@@ -29,36 +30,40 @@ import {
 function Jobs() {
   const [jobs, setJobs] = useState([]);
   const [selectedJob, setSelectedJob] = useState(null);
+
+  // Fields for manually adding a job (Modal)
   const [jobTitle, setJobTitle] = useState("");
   const [companyName, setCompanyName] = useState("");
   const [jobDescription, setJobDescription] = useState("");
+  const [jobLink, setJobLink] = useState("");
 
-  // For LinkedIn search
+  // LinkedIn search
   const [linkedinUsername, setLinkedinUsername] = useState("");
   const [linkedinPassword, setLinkedinPassword] = useState("");
   const [experienceLevel, setExperienceLevel] = useState("No Filter");
   const [jobTitles, setJobTitles] = useState("");
   const [maxJobs, setMaxJobs] = useState(10);
 
-  // Search and Filter States
+  // Search & Filter
   const [searchTerm, setSearchTerm] = useState("");
   const [filterCompany, setFilterCompany] = useState("");
 
-  // Loading and Error States
+  // Loading & Error
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
-  // LinkedIn Search Status States
+  // LinkedIn States
   const [linkedinLoading, setLinkedinLoading] = useState(false);
   const [linkedinSuccess, setLinkedinSuccess] = useState(false);
 
-  // Delete All Confirmation Modal
+  // Modal States
   const [showDeleteAllModal, setShowDeleteAllModal] = useState(false);
+  const [showAddJobModal, setShowAddJobModal] = useState(false);
 
-  // **Added State for Job Link**
-  const [jobLink, setJobLink] = useState("");
+  // State to track which job ID was copied
+  const [copiedJobId, setCopiedJobId] = useState(null);
 
-  // Function to fetch all jobs
+  // Fetch Jobs
   const fetchJobs = async () => {
     try {
       const response = await axiosInstance.get("/jobs");
@@ -73,7 +78,7 @@ function Jobs() {
     fetchJobs();
   }, []);
 
-  // Function to search jobs by title
+  // Search Jobs by Title
   const searchJobsByTitle = async (title) => {
     setIsLoading(true);
     setError("");
@@ -94,21 +99,21 @@ function Jobs() {
     }
   };
 
-  // Handle Search Button Click
-  const handleSearch = (e) => {
+  // Handle Search
+  const handleSearch = async (e) => {
     e.preventDefault();
-    if (searchTerm.trim() === "" && filterCompany.trim() === "") {
-      // If both search term and filter are empty, fetch all jobs
+    if (!searchTerm.trim() && !filterCompany.trim()) {
+      // If both search term and filter are empty, fetch all
       fetchJobs();
     } else {
-      // Perform server-side search and client-side filter
-      if (searchTerm.trim() !== "") {
-        searchJobsByTitle(searchTerm.trim());
+      if (searchTerm.trim()) {
+        await searchJobsByTitle(searchTerm.trim());
       }
-      // Client-side filter will be applied in the rendering logic
+      // The filterCompany will be applied client-side below
     }
   };
 
+  // Save Job (from "Add Job" Modal)
   const handleSaveJob = async (e) => {
     e.preventDefault();
     setIsLoading(true);
@@ -118,20 +123,18 @@ function Jobs() {
       formData.append("job_title", jobTitle);
       formData.append("company_name", companyName);
       formData.append("job_description", jobDescription);
-      formData.append("job_link", jobLink); // Append Job Link if needed
+      formData.append("job_link", jobLink);
 
-      await axiosInstance.post("/jobs/save", formData, {
-        headers: {
-          // 'Content-Type': 'multipart/form-data', // Let Axios set this automatically
-        },
-      });
-
+      await axiosInstance.post("/jobs/save", formData);
       alert("Job saved successfully!");
+
+      // Clear fields
       setJobTitle("");
       setCompanyName("");
       setJobDescription("");
-      setJobLink(""); // Clear Job Link
+      setJobLink("");
       fetchJobs();
+      setShowAddJobModal(false); // Close modal
     } catch (err) {
       console.error("Failed to save job:", err);
       setError(
@@ -143,6 +146,7 @@ function Jobs() {
     }
   };
 
+  // Delete Single Job
   const handleDeleteJob = async (jobId) => {
     if (!window.confirm("Are you sure you want to delete this job?")) return;
     setIsLoading(true);
@@ -159,6 +163,7 @@ function Jobs() {
     }
   };
 
+  // Delete All Jobs
   const handleDeleteAllJobs = async () => {
     setShowDeleteAllModal(false);
     setIsLoading(true);
@@ -175,27 +180,26 @@ function Jobs() {
     }
   };
 
+  // LinkedIn Search
   const handleLinkedInSearch = async (e) => {
     e.preventDefault();
-
-    // Basic validation
     if (!linkedinUsername || !linkedinPassword || !jobTitles || !maxJobs) {
       alert("Please fill in all required fields.");
       return;
     }
 
+    setLinkedinLoading(true);
+    setLinkedinSuccess(false);
+    setError("");
+
     const jobTitlesArray = jobTitles
       .split(",")
       .map((title) => title.trim())
-      .filter((title) => title);
+      .filter(Boolean);
     const experienceLevelValue =
       experienceLevel === "No Filter"
         ? "no filter"
         : experienceLevel.toLowerCase();
-
-    setLinkedinLoading(true);
-    setLinkedinSuccess(false);
-    setError("");
 
     try {
       const formData = new FormData();
@@ -205,16 +209,11 @@ function Jobs() {
       formData.append("experience_level", experienceLevelValue);
 
       jobTitlesArray.forEach((title) => formData.append("job_titles", title));
-
-      await axiosInstance.post("/jobs/linkedin/search", formData, {
-        headers: {
-          // 'Content-Type': 'multipart/form-data', // Removed to let Axios set it correctly
-        },
-      });
+      await axiosInstance.post("/jobs/linkedin/search", formData);
 
       setLinkedinSuccess(true);
       alert("LinkedIn jobs searched & saved successfully!");
-      // Clear LinkedIn search fields
+      // Clear fields
       setLinkedinUsername("");
       setLinkedinPassword("");
       setExperienceLevel("No Filter");
@@ -233,18 +232,34 @@ function Jobs() {
     }
   };
 
-  // Tooltip for Delete All Button
+  // Tooltip for "Delete All"
   const renderDeleteAllTooltip = (props) => (
     <Tooltip id="button-tooltip" {...props}>
       Permanently delete all your saved jobs. This action cannot be undone.
     </Tooltip>
   );
 
+  // Function to handle copying Job ID
+  const handleCopyJobId = (jobId) => {
+    navigator.clipboard
+      .writeText(jobId)
+      .then(() => {
+        setCopiedJobId(jobId); // Set the copied ID
+        setTimeout(() => {
+          setCopiedJobId(null); // Reset the copied ID after 2 seconds
+        }, 2000);
+      })
+      .catch((err) => {
+        console.error("Failed to copy Job ID:", err);
+        alert("Failed to copy Job ID. Please try again.");
+      });
+  };
+
   return (
     <div className="jobs-container">
-      <h2>My Saved Jobs</h2>
+      <h2 className="mb-4">My Saved Jobs</h2>
 
-      {/* Alert for Errors */}
+      {/* Error Alert */}
       {error && (
         <Alert variant="danger" onClose={() => setError("")} dismissible>
           <FaInfoCircle className="me-2" />
@@ -252,7 +267,7 @@ function Jobs() {
         </Alert>
       )}
 
-      {/* Loading Spinner */}
+      {/* Global Spinner */}
       {isLoading && (
         <div className="text-center my-3">
           <Spinner animation="border" role="status" />
@@ -260,23 +275,27 @@ function Jobs() {
         </div>
       )}
 
-      {/* Job List and Integrated Search */}
-      <div className="job-list-wrapper">
-        {/* Search and Filter */}
-        <Card className="mb-4">
-          <Card.Body>
-            <Form onSubmit={handleSearch}>
-              <Row className="align-items-end">
-                <Col xs="12" md="4" className="mb-3">
-                  <Form.Label htmlFor="searchJobTitle">
-                    <strong>Search by Job Title</strong>
-                  </Form.Label>
+      {/* Search & Filter */}
+      {/* 
+        Removed extra space below this Card by controlling margin in CSS.
+        Use smaller inputs to make the search bar appear smaller.
+      */}
+      <Card className="search-filter-card">
+        <Card.Header as="h5">
+          <FaSearch className="me-2" />
+          Search & Filter
+        </Card.Header>
+        <Card.Body>
+          <Form onSubmit={handleSearch}>
+            <Row className="g-3">
+              <Col xs="12" md="6">
+                <Form.Group controlId="searchJobTitle">
+                  <Form.Label>Job Title</Form.Label>
                   <InputGroup>
                     <InputGroup.Text>
                       <FaSearch />
                     </InputGroup.Text>
                     <Form.Control
-                      id="searchJobTitle"
                       type="text"
                       placeholder="e.g., Software Engineer"
                       value={searchTerm}
@@ -285,16 +304,15 @@ function Jobs() {
                     />
                   </InputGroup>
                   <Form.Text className="text-muted">
-                    Enter the job title you are looking for.
+                    Search for a specific job title.
                   </Form.Text>
-                </Col>
+                </Form.Group>
+              </Col>
 
-                <Col xs="12" md="4" className="mb-3">
-                  <Form.Label htmlFor="filterCompany">
-                    <strong>Filter by Company Name</strong>
-                  </Form.Label>
+              <Col xs="12" md="6">
+                <Form.Group controlId="filterCompany">
+                  <Form.Label>Company Name</Form.Label>
                   <Form.Control
-                    id="filterCompany"
                     type="text"
                     placeholder="e.g., Google"
                     value={filterCompany}
@@ -302,38 +320,40 @@ function Jobs() {
                     aria-label="Filter by Company Name"
                   />
                   <Form.Text className="text-muted">
-                    Narrow down jobs by specifying the company name.
+                    Filter jobs by specifying the company name.
                   </Form.Text>
-                </Col>
+                </Form.Group>
+              </Col>
+            </Row>
 
-                <Col xs="12" md="4" className="mb-3 d-flex">
-                  <Button
-                    variant="primary"
-                    type="submit"
-                    className="me-2 flex-grow-1"
-                  >
-                    <FaSearch className="me-1" />
-                    Search
-                  </Button>
-                  <Button
-                    variant="secondary"
-                    onClick={() => {
-                      setSearchTerm("");
-                      setFilterCompany("");
-                      fetchJobs();
-                    }}
-                    className="flex-grow-1"
-                  >
-                    <FaTimes className="me-1" />
-                    Clear
-                  </Button>
-                </Col>
-              </Row>
-            </Form>
-          </Card.Body>
-        </Card>
+            <div className="mt-3 d-flex gap-2">
+              <Button
+                variant="primary"
+                type="submit"
+                className="d-flex align-items-center"
+              >
+                <FaSearch className="me-1" />
+                Search
+              </Button>
+              <Button
+                variant="secondary"
+                onClick={() => {
+                  setSearchTerm("");
+                  setFilterCompany("");
+                  fetchJobs();
+                }}
+                className="d-flex align-items-center"
+              >
+                <FaTimes className="me-1" />
+                Clear
+              </Button>
+            </div>
+          </Form>
+        </Card.Body>
+      </Card>
 
-        {/* Job List */}
+      {/* Job List */}
+      <div className="job-list-wrapper">
         <ul className="list-group jobs-list">
           {jobs.length === 0 ? (
             <li className="list-group-item text-center">
@@ -353,27 +373,29 @@ function Jobs() {
                   className="list-group-item d-flex justify-content-between align-items-center"
                   key={job._id}
                 >
-                  <div className="job-info">
-                    <FaInfoCircle className="me-2 text-primary" />{" "}
-                    {/* Job Icon */}
-                    <strong>{job.job_title}</strong> at{" "}
-                    {job.company_name || "N/A"} (ID: {job._id})
+                  <div className="job-info d-flex align-items-center">
+                    <FaInfoCircle
+                      className="me-2 text-primary"
+                      style={{ cursor: "pointer" }}
+                      onClick={() => setSelectedJob(job)}
+                      aria-label={`View details for ${job.job_title}`}
+                    />
+                    <strong className="me-1">{job.job_title}</strong> at{" "}
+                    {job.company_name || "N/A"}
                   </div>
-                  <div className="job-actions">
-                    <OverlayTrigger
-                      placement="top"
-                      overlay={<Tooltip>View Details</Tooltip>}
+                  <div className="job-actions d-flex align-items-center">
+                    {/* Copy ID Button */}
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      className="me-2"
+                      onClick={() => handleCopyJobId(job._id)}
+                      title="Copy Job ID"
+                      aria-label={`Copy ID for job ${job.job_title}`}
                     >
-                      <Button
-                        variant="info"
-                        size="sm"
-                        className="me-2"
-                        onClick={() => setSelectedJob(job)}
-                        aria-label={`View details for ${job.job_title}`}
-                      >
-                        <FaInfoCircle />
-                      </Button>
-                    </OverlayTrigger>
+                      {copiedJobId === job._id ? <FaCheck /> : <FaCopy />}
+                    </Button>
+                    {/* Delete Job Button */}
                     <OverlayTrigger
                       placement="top"
                       overlay={<Tooltip>Delete This Job</Tooltip>}
@@ -393,13 +415,25 @@ function Jobs() {
           )}
         </ul>
 
-        {/* Delete All Jobs Button */}
+        {/* Bottom row of buttons with "Add Job" on the left, "Delete All" on the right */}
         {jobs.length > 0 && (
-          <div className="d-flex justify-content-end mt-3">
+          <div className="job-list-buttons d-flex justify-content-between mt-3">
+            {/* Add Job Button */}
+            <Button
+              variant="success"
+              onClick={() => setShowAddJobModal(true)}
+              className="d-flex align-items-center"
+            >
+              <FaPlus className="me-2" />
+              Add Job
+            </Button>
+
+            {/* Delete All */}
             <OverlayTrigger placement="top" overlay={renderDeleteAllTooltip}>
               <Button
                 variant="danger"
                 onClick={() => setShowDeleteAllModal(true)}
+                className="d-flex align-items-center"
               >
                 <FaTrash className="me-2" />
                 Delete All Jobs
@@ -417,12 +451,16 @@ function Jobs() {
       {/* LinkedIn Search Form */}
       <Card className="mb-5 mt-5">
         <Card.Header as="h5" className="d-flex align-items-center">
-          <FaLinkedin className="me-2 text-primary" />
+          <FaLinkedin
+            className="me-3 text-primary"
+            style={{ fontSize: "2.5rem" }}
+          />
           <FaSearch className="me-2" />
           Search & Save Jobs from LinkedIn
         </Card.Header>
         <Card.Body>
           <Form onSubmit={handleLinkedInSearch}>
+            {/* LinkedIn form fields remain unchanged */}
             <Row>
               <Col xs="12" md="6" className="mb-3">
                 <Form.Group controlId="formLinkedinUsername">
@@ -532,14 +570,12 @@ function Jobs() {
               </Col>
             </Row>
 
-            {/* Informational Alert */}
+            {/* LinkedIn Loading / Success Alerts */}
             {linkedinLoading && (
               <Alert variant="info" className="mt-3">
                 This action may take several minutes. Please wait...
               </Alert>
             )}
-
-            {/* Success Alert */}
             {linkedinSuccess && (
               <Alert variant="success" className="mt-3">
                 Operation complete! Jobs have been saved successfully.
@@ -566,15 +602,22 @@ function Jobs() {
         </Card.Body>
       </Card>
 
-      {/* Save Job Form */}
-      <Card className="mt-5 mb-4">
-        <Card.Header as="h5">
-          <FaPlus className="me-2" />
-          Save a New Job
-        </Card.Header>
-        <Card.Body>
+      {/* Add Job Modal */}
+      <Modal
+        show={showAddJobModal}
+        onHide={() => setShowAddJobModal(false)}
+        centered
+        aria-labelledby="add-job-modal"
+      >
+        <Modal.Header closeButton>
+          <Modal.Title id="add-job-modal">
+            <FaPlus className="me-2" />
+            Add a New Job
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
           <Form onSubmit={handleSaveJob}>
-            <Row>
+            <Row className="mb-3">
               <Col xs="12" md="6" className="mb-3">
                 <Form.Group controlId="formJobTitle">
                   <Form.Label>
@@ -582,16 +625,13 @@ function Jobs() {
                   </Form.Label>
                   <Form.Control
                     type="text"
-                    placeholder="Enter the job title (e.g., Frontend Developer)"
+                    placeholder="e.g., Frontend Developer"
                     value={jobTitle}
                     onChange={(e) => setJobTitle(e.target.value)}
                     required
                     aria-required="true"
                     aria-label="Job Title"
                   />
-                  <Form.Text className="text-muted">
-                    Provide a clear and specific job title.
-                  </Form.Text>
                 </Form.Group>
               </Col>
 
@@ -600,81 +640,72 @@ function Jobs() {
                   <Form.Label>Company Name</Form.Label>
                   <Form.Control
                     type="text"
-                    placeholder="Enter the company name (e.g., OpenAI)"
+                    placeholder="e.g., Google"
                     value={companyName}
                     onChange={(e) => setCompanyName(e.target.value)}
                     aria-label="Company Name"
                   />
-                  <Form.Text className="text-muted">
-                    Optional: Specify the company offering the job.
-                  </Form.Text>
                 </Form.Group>
               </Col>
             </Row>
 
-            {/* Optional Job Link Field */}
-            <Row>
-              <Col xs="12" className="mb-3">
-                <Form.Group controlId="formJobLink">
-                  <Form.Label>Job Link</Form.Label>
-                  <Form.Control
-                    type="url"
-                    placeholder="Enter the job link (e.g., https://www.linkedin.com/jobs/view/12345)"
-                    value={jobLink}
-                    onChange={(e) => setJobLink(e.target.value)}
-                    aria-label="Job Link"
-                  />
-                  <Form.Text className="text-muted">
-                    Optional: Provide a link to the job posting.
-                  </Form.Text>
-                </Form.Group>
-              </Col>
-            </Row>
+            <Form.Group controlId="formJobLink" className="mb-3">
+              <Form.Label>Job Link (Optional)</Form.Label>
+              <Form.Control
+                type="url"
+                placeholder="https://www.linkedin.com/jobs/view/12345"
+                value={jobLink}
+                onChange={(e) => setJobLink(e.target.value)}
+                aria-label="Job Link"
+              />
+            </Form.Group>
 
-            <Row>
-              <Col xs="12">
-                <Form.Group controlId="formJobDescription" className="mb-3">
-                  <Form.Label>
-                    Job Description <span className="text-danger">*</span>
-                  </Form.Label>
-                  <Form.Control
-                    as="textarea"
-                    rows={3}
-                    placeholder="Provide a brief description of the job responsibilities and requirements."
-                    value={jobDescription}
-                    onChange={(e) => setJobDescription(e.target.value)}
-                    required
-                    aria-required="true"
-                    aria-label="Job Description"
-                  />
-                  <Form.Text className="text-muted">
-                    Include key details to help you remember the job.
-                  </Form.Text>
-                </Form.Group>
-              </Col>
-            </Row>
+            <Form.Group controlId="formJobDescription" className="mb-3">
+              <Form.Label>
+                Job Description <span className="text-danger">*</span>
+              </Form.Label>
+              <Form.Control
+                as="textarea"
+                rows={3}
+                placeholder="Brief description of responsibilities and requirements."
+                value={jobDescription}
+                onChange={(e) => setJobDescription(e.target.value)}
+                required
+                aria-required="true"
+                aria-label="Job Description"
+              />
+            </Form.Group>
 
-            <Button variant="primary" type="submit" disabled={isLoading}>
-              {isLoading ? (
-                <>
-                  <Spinner
-                    as="span"
-                    animation="border"
-                    size="sm"
-                    role="status"
-                    aria-hidden="true"
-                  />{" "}
-                  Saving...
-                </>
-              ) : (
-                "Save Job"
-              )}
-            </Button>
+            <div className="text-end">
+              <Button
+                variant="secondary"
+                onClick={() => setShowAddJobModal(false)}
+                className="me-2"
+              >
+                Cancel
+              </Button>
+              <Button variant="primary" type="submit" disabled={isLoading}>
+                {isLoading ? (
+                  <>
+                    <Spinner
+                      as="span"
+                      animation="border"
+                      size="sm"
+                      role="status"
+                      aria-hidden="true"
+                    />{" "}
+                    Saving...
+                  </>
+                ) : (
+                  "Save Job"
+                )}
+              </Button>
+            </div>
           </Form>
-        </Card.Body>
-      </Card>
+        </Modal.Body>
+      </Modal>
 
-      {/* Delete All Jobs Confirmation Modal */}
+      {/* Delete All Confirmation Modal */}
       <Modal
         show={showDeleteAllModal}
         onHide={() => setShowDeleteAllModal(false)}

@@ -1,14 +1,15 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Navbar from './components/Navbar';
-import Home from './pages/Home';
-import Login from './pages/Login';
-import Register from './pages/Register';
-import Dashboard from './pages/Dashboard';
-import Resumes from './pages/Resumes';
-import Jobs from './pages/Jobs';
-import AdminPanel from './pages/AdminPanel';
-import PrivateRoute from './components/PrivateRoute';
+// /Users/yardenmac/Desktop/Software/Pycharm/resume_optimizer_frontend/my-app/src/App.js
+import React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Navbar from "./components/Navbar";
+import Home from "./pages/Home";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import Dashboard from "./pages/Dashboard";
+import Resumes from "./pages/Resumes";
+import Jobs from "./pages/Jobs";
+import AdminPanel from "./pages/AdminPanel";
+import PrivateRoute from "./components/PrivateRoute";
 
 function App() {
   return (

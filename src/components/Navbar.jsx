@@ -1,19 +1,23 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
-import "./style/Navbar.css";
+import axiosInstance from "../utils/axiosInstance"; // Use the custom axios instance
+import { Modal, Button } from "react-bootstrap"; // Import from react-bootstrap
+import "./style/Navbar.css"; // Custom navbar CSS (optional)
 
 function Navbar() {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
+
+  // For Logout Confirmation Modal
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
 
   // Fetch user info on component mount
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) return;
 
-    axios
-      .get("http://127.0.0.1:8000/users/me", {
+    axiosInstance
+      .get("/users/me", {
         headers: { Authorization: token },
       })
       .then((res) => {
@@ -25,89 +29,149 @@ function Navbar() {
       });
   }, []);
 
-  const handleLogout = () => {
+  // Actually perform logout
+  const performLogout = () => {
     localStorage.removeItem("token");
     navigate("/login");
+  };
+
+  // Handle "Logout" button click
+  const handleLogoutClick = () => {
+    setShowLogoutModal(true);
+  };
+
+  // If user confirms logout in modal
+  const confirmLogout = () => {
+    setShowLogoutModal(false);
+    performLogout();
+  };
+
+  // If user cancels logout in modal
+  const cancelLogout = () => {
+    setShowLogoutModal(false);
   };
 
   const token = localStorage.getItem("token");
 
   return (
-    <nav className="navbar navbar-expand-lg">
-      <div className="container-fluid">
-        <Link className="navbar-brand" to="/">
-          Resume Optimizer
-        </Link>
-        <button
-          className="navbar-toggler"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#navbarToggler"
-          aria-controls="navbarToggler"
-          aria-expanded="false"
-          aria-label="Toggle navigation"
-        >
-          <span className="navbar-toggler-icon" />
-        </button>
+    <>
+      <nav className="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+        <div className="container-fluid">
+          <Link className="navbar-brand fw-bold" to="/">
+            Resume Optimizer
+          </Link>
 
-        <div className="collapse navbar-collapse" id="navbarToggler">
-          <ul className="navbar-nav ms-auto mb-2 mb-lg-0">
-            {token ? (
-              <>
-                <li className="nav-item" style={{ paddingTop: "8px" }}>
-                  <span className="navbar-text me-3">
-                    Hello, {user?.name || "User"}
-                  </span>
-                </li>
-                <li className="nav-item">
-                  <Link className="nav-link" to="/dashboard">
-                    Dashboard
-                  </Link>
-                </li>
-                <li className="nav-item">
-                  <Link className="nav-link" to="/resumes">
-                    Resumes
-                  </Link>
-                </li>
-                <li className="nav-item">
-                  <Link className="nav-link" to="/jobs">
-                    Jobs
-                  </Link>
-                </li>
-                {user?.is_admin && (
+          {/* Navbar Toggle */}
+          <button
+            className="navbar-toggler"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#navbarToggler"
+            aria-controls="navbarToggler"
+            aria-expanded="false"
+            aria-label="Toggle navigation"
+          >
+            <span className="navbar-toggler-icon" />
+          </button>
+
+          {/* Collapsible Menu */}
+          <div className="collapse navbar-collapse" id="navbarToggler">
+            <ul className="navbar-nav ms-auto mb-2 mb-lg-0">
+              {token ? (
+                <>
+                  {/* Greeting */}
+                  <li className="nav-item d-flex align-items-center me-3">
+                    <span className="navbar-text">
+                      Hello, {user?.name || "User"}
+                    </span>
+                  </li>
+
+                  {/* Dashboard */}
                   <li className="nav-item">
-                    <Link className="nav-link" to="/admin">
-                      Admin
+                    <Link className="nav-link" to="/dashboard">
+                      Dashboard
                     </Link>
                   </li>
-                )}
-                <li className="nav-item">
-                  <button
-                    className="btn btn-outline-light"
-                    onClick={handleLogout}
-                  >
-                    Logout
-                  </button>
-                </li>
-              </>
-            ) : (
-              <>
-                <li className="nav-item">
-                  <Link className="nav-link" to="/register">
-                    Register
-                  </Link>
-                </li>
-                <li className="nav-item">
-                  <Link className="nav-link" to="/login">
-                    Login
-                  </Link>
-                </li>
-              </>
-            )}
-          </ul>
+
+                  {/* Resumes */}
+                  <li className="nav-item">
+                    <Link className="nav-link" to="/resumes">
+                      Resumes
+                    </Link>
+                  </li>
+
+                  {/* Jobs */}
+                  <li className="nav-item">
+                    <Link className="nav-link" to="/jobs">
+                      Jobs
+                    </Link>
+                  </li>
+
+                  {/* Admin (conditional) */}
+                  {user?.is_admin && (
+                    <li className="nav-item">
+                      <Link className="nav-link" to="/admin">
+                        Admin
+                      </Link>
+                    </li>
+                  )}
+
+                  {/* Logout */}
+                  <li className="nav-item">
+                    <button
+                      className="btn btn-outline-light ms-3"
+                      onClick={handleLogoutClick}
+                    >
+                      Logout
+                    </button>
+                  </li>
+                </>
+              ) : (
+                <>
+                  <li className="nav-item">
+                    <Link className="nav-link" to="/register">
+                      Register
+                    </Link>
+                  </li>
+                  <li className="nav-item">
+                    <Link className="nav-link" to="/login">
+                      Login
+                    </Link>
+                  </li>
+                </>
+              )}
+            </ul>
+          </div>
         </div>
-      </div>
-    </nav>
+      </nav>
+
+      {/* Logout Confirmation Modal */}
+      <Modal
+        show={showLogoutModal}
+        onHide={cancelLogout}
+        centered
+        backdrop="static"
+        keyboard={false}
+        aria-labelledby="logout-confirmation-modal"
+      >
+        <Modal.Header closeButton>
+          <Modal.Title id="logout-confirmation-modal">
+            Confirm Logout
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p>Are you sure you want to log out?</p>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={cancelLogout}>
+            Cancel
+          </Button>
+          <Button variant="danger" onClick={confirmLogout}>
+            Logout
+          </Button>
+        </Modal.Footer>
+      </Modal>
+    </>
   );
 }
 

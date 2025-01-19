@@ -1,0 +1,31 @@
+/* Dashboard.css */
+
+/* Example for extra spacing around the greeting */
+.dashboard-greeting {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+/* Subtle card shadow can be added if needed, or override Bootstrap's .shadow-sm */
+.card.shadow-sm {
+  border-radius: 8px;
+}
+
+/* Style for the card titles and text for a more distinct look */
+.card-title {
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: #343a40;
+}
+
+.card-text {
+  font-size: 0.95rem;
+  color: #6c757d;
+}
+
+/* Responsive adjustments (optional) */
+@media (max-width: 768px) {
+  .dashboard-greeting {
+    margin-bottom: 1rem;
+  }
+}
