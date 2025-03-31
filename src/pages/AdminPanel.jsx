@@ -1,18 +1,14 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import axiosInstance from "../utils/axiosInstance"; // Import custom axios instance
 
 function AdminPanel() {
   const [users, setUsers] = useState([]);
   const [userIdSearch, setUserIdSearch] = useState("");
   const [singleUser, setSingleUser] = useState(null);
 
-  const token = localStorage.getItem("token");
-
   const fetchAllUsers = async () => {
     try {
-      const res = await axios.get("http://127.0.0.1:8000/admin/users", {
-        headers: { Authorization: token },
-      });
+      const res = await axiosInstance.get("/admin/users");
       setUsers(res.data);
     } catch (err) {
       console.error("Failed to fetch all users:", err);
@@ -22,9 +18,7 @@ function AdminPanel() {
   const handleDeleteAllUsers = async () => {
     if (!window.confirm("Are you sure you want to delete ALL users?")) return;
     try {
-      await axios.delete("http://127.0.0.1:8000/admin/users", {
-        headers: { Authorization: token },
-      });
+      await axiosInstance.delete("/admin/users");
       alert("All users deleted successfully.");
       setUsers([]);
     } catch (err) {
@@ -36,12 +30,7 @@ function AdminPanel() {
     e.preventDefault();
     if (!userIdSearch) return;
     try {
-      const res = await axios.get(
-        `http://127.0.0.1:8000/admin/${userIdSearch}`,
-        {
-          headers: { Authorization: token },
-        }
-      );
+      const res = await axiosInstance.get(`/admin/${userIdSearch}`);
       setSingleUser(res.data);
     } catch (err) {
       console.error("Failed to fetch user:", err);
@@ -56,9 +45,7 @@ function AdminPanel() {
     )
       return;
     try {
-      await axios.delete(`http://127.0.0.1:8000/admin/${userIdSearch}`, {
-        headers: { Authorization: token },
-      });
+      await axiosInstance.delete(`/admin/${userIdSearch}`);
       alert("User deleted successfully.");
       setSingleUser(null);
       setUserIdSearch("");
@@ -71,7 +58,6 @@ function AdminPanel() {
   useEffect(() => {
     fetchAllUsers();
   }, []);
-
   return (
     <div>
       <h2>Admin Panel</h2>

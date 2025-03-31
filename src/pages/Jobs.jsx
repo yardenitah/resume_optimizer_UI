@@ -1,4 +1,3 @@
-// src/components/Jobs.jsx
 import React, { useEffect, useState } from "react";
 import axiosInstance from "../utils/axiosInstance";
 import JobCard from "../components/JobCard.jsx";
@@ -9,10 +8,10 @@ import {
   FaSearch,
   FaTimes,
   FaLinkedin,
-  FaCopy, // Import FaCopy icon
-  FaCheck, // Import FaCheck icon
+  FaCopy,
+  FaCheck,
 } from "react-icons/fa";
-import "./style/Jobs.css"; // Ensure this CSS is imported
+import "./style/Jobs.css";
 import {
   Modal,
   Button,
@@ -43,23 +42,18 @@ function Jobs() {
   const [experienceLevel, setExperienceLevel] = useState("No Filter");
   const [jobTitles, setJobTitles] = useState("");
   const [maxJobs, setMaxJobs] = useState(10);
-
   // Search & Filter
   const [searchTerm, setSearchTerm] = useState("");
   const [filterCompany, setFilterCompany] = useState("");
-
   // Loading & Error
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
-
   // LinkedIn States
   const [linkedinLoading, setLinkedinLoading] = useState(false);
   const [linkedinSuccess, setLinkedinSuccess] = useState(false);
-
   // Modal States
   const [showDeleteAllModal, setShowDeleteAllModal] = useState(false);
   const [showAddJobModal, setShowAddJobModal] = useState(false);
-
   // State to track which job ID was copied
   const [copiedJobId, setCopiedJobId] = useState(null);
 
@@ -74,9 +68,81 @@ function Jobs() {
     }
   };
 
+  // Initialize LinkedIn loading state from local storage
+  useEffect(() => {
+    const savedLoadingState = localStorage.getItem("linkedinLoading");
+    if (savedLoadingState === "true") {
+      setLinkedinLoading(true);
+    }
+  }, []);
+
+  // Persist `linkedinLoading` state to local storage
+  useEffect(() => {
+    localStorage.setItem("linkedinLoading", linkedinLoading);
+  }, [linkedinLoading]);
+
   useEffect(() => {
     fetchJobs();
   }, []);
+
+  // LinkedIn Search
+  const handleLinkedInSearch = async (e) => {
+    e.preventDefault();
+    if (!linkedinUsername || !linkedinPassword || !jobTitles || !maxJobs) {
+      alert("Please fill in all required fields.");
+      return;
+    }
+
+    setLinkedinLoading(true);
+    setLinkedinSuccess(false);
+    setError("");
+
+    const jobTitlesArray = jobTitles
+      .split(",")
+      .map((title) => title.trim())
+      .filter(Boolean);
+    const experienceLevelValue =
+      experienceLevel === "No Filter"
+        ? "no filter"
+        : experienceLevel.toLowerCase();
+
+    try {
+      const formData = new FormData();
+      formData.append("linkedin_username", linkedinUsername);
+      formData.append("linkedin_password", linkedinPassword);
+      formData.append("maxNumberOfJobsTosearch", maxJobs);
+      formData.append("experience_level", experienceLevelValue);
+      jobTitlesArray.forEach((title) => formData.append("job_titles", title));
+
+      for (const [key, value] of formData.entries()) {
+        console.log(key, value);
+      }
+
+      await axiosInstance.post("/jobs/linkedin/search", formData);
+
+      setLinkedinSuccess(true);
+      alert("LinkedIn jobs searched & saved successfully!");
+      fetchJobs();
+
+      // Clear LinkedIn form fields
+      setLinkedinUsername("");
+      setLinkedinPassword("");
+      setExperienceLevel("No Filter");
+      setJobTitles("");
+      setMaxJobs(10);
+      fetchJobs();
+    } catch (err) {
+      console.error("Failed to search & save LinkedIn jobs:", err);
+      setError(
+        err.response?.data?.detail ||
+          "LinkedIn search failed. Please check your credentials and try again."
+      );
+      alert(err.response?.data?.detail || "LinkedIn search failed");
+    } finally {
+      setLinkedinLoading(false);
+      localStorage.removeItem("linkedinLoading"); // Clear from local storage
+    }
+  };
 
   // Search Jobs by Title
   const searchJobsByTitle = async (title) => {
@@ -177,58 +243,6 @@ function Jobs() {
       setError("Failed to delete all jobs. Please try again later.");
     } finally {
       setIsLoading(false);
-    }
-  };
-
-  // LinkedIn Search
-  const handleLinkedInSearch = async (e) => {
-    e.preventDefault();
-    if (!linkedinUsername || !linkedinPassword || !jobTitles || !maxJobs) {
-      alert("Please fill in all required fields.");
-      return;
-    }
-
-    setLinkedinLoading(true);
-    setLinkedinSuccess(false);
-    setError("");
-
-    const jobTitlesArray = jobTitles
-      .split(",")
-      .map((title) => title.trim())
-      .filter(Boolean);
-    const experienceLevelValue =
-      experienceLevel === "No Filter"
-        ? "no filter"
-        : experienceLevel.toLowerCase();
-
-    try {
-      const formData = new FormData();
-      formData.append("linkedin_username", linkedinUsername);
-      formData.append("linkedin_password", linkedinPassword);
-      formData.append("maxNumberOfJobsTosearch", maxJobs);
-      formData.append("experience_level", experienceLevelValue);
-
-      jobTitlesArray.forEach((title) => formData.append("job_titles", title));
-      await axiosInstance.post("/jobs/linkedin/search", formData);
-
-      setLinkedinSuccess(true);
-      alert("LinkedIn jobs searched & saved successfully!");
-      // Clear fields
-      setLinkedinUsername("");
-      setLinkedinPassword("");
-      setExperienceLevel("No Filter");
-      setJobTitles("");
-      setMaxJobs(10);
-      fetchJobs();
-    } catch (err) {
-      console.error("Failed to search & save LinkedIn jobs:", err);
-      setError(
-        err.response?.data?.detail ||
-          "LinkedIn search failed. Please check your credentials and try again."
-      );
-      alert(err.response?.data?.detail || "LinkedIn search failed");
-    } finally {
-      setLinkedinLoading(false);
     }
   };
 
@@ -416,7 +430,7 @@ function Jobs() {
         </ul>
 
         {/* Bottom row of buttons with "Add Job" on the left, "Delete All" on the right */}
-        {jobs.length > 0 && (
+        {jobs.length > -1 && (
           <div className="job-list-buttons d-flex justify-content-between mt-3">
             {/* Add Job Button */}
             <Button

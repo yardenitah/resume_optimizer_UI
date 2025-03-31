@@ -4,8 +4,12 @@ import { getAuthHeader } from "./auth"; // Ensure './auth' correctly points to '
 
 console.log("Imported getAuthHeader:", getAuthHeader); // Debugging log
 
+const axiosInstanceDev = axios.create({
+  baseURL: "http://127.0.0.1:8000/api", // Adjust the base URL as needed
+});
+
 const axiosInstance = axios.create({
-  baseURL: "http://127.0.0.1:8000", // Adjust the base URL as needed
+  baseURL: "http://127.0.0.1:8000/api", // Your EC2 public IP
 });
 
 // Add a request interceptor to include Authorization header
