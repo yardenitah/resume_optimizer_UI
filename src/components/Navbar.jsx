@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import axiosInstance from "../utils/axiosInstance"; // Use the custom axios instance
 import { Modal, Button } from "react-bootstrap"; // Import from react-bootstrap
 import "./style/Navbar.css"; // Custom navbar CSS (optional)
+import { Collapse } from "bootstrap";
 
 function Navbar() {
   const navigate = useNavigate();
@@ -27,6 +28,15 @@ function Navbar() {
         // Handle errors (e.g., invalid token) by logging out the user
         localStorage.removeItem("token");
       });
+  }, []);
+
+  useEffect(() => {
+    const collapseElement = document.getElementById("navbarToggler");
+    if (collapseElement) {
+      new Collapse(collapseElement, {
+        toggle: false,
+      });
+    }
   }, []);
 
   // Actually perform logout
