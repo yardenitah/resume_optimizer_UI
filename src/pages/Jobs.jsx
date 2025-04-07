@@ -26,6 +26,16 @@ import {
   OverlayTrigger,
 } from "react-bootstrap";
 
+const getDaysAgo = (createdAt) => {
+  const jobDate = new Date(createdAt);
+  const now = new Date();
+  const diffInMs = now - jobDate;
+  const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
+  if (diffInDays === 0) return "Today";
+  if (diffInDays === 1) return "1 day ago";
+  return `${diffInDays} days ago`;
+};
+
 function Jobs() {
   const [jobs, setJobs] = useState([]);
   const [selectedJob, setSelectedJob] = useState(null);
@@ -376,15 +386,25 @@ function Jobs() {
                   key={job._id}
                 >
                   <div className="job-info d-flex align-items-center">
-                    <FaInfoCircle
-                      className="me-2 text-primary"
-                      style={{ cursor: "pointer" }}
-                      onClick={() => setSelectedJob(job)}
-                      aria-label={`View details for ${job.job_title}`}
-                    />
-                    <strong className="me-1">{job.job_title}</strong> at{" "}
-                    {job.company_name || "N/A"}
+                    <div className="job-info d-flex align-items-center flex-wrap">
+                      <FaInfoCircle
+                        className="me-2 text-primary"
+                        style={{ cursor: "pointer" }}
+                        onClick={() => setSelectedJob(job)}
+                        aria-label={`View details for ${job.job_title}`}
+                      />
+                      <div>
+                        <strong>{job.job_title}</strong>{" "}
+                        <span className="text-muted">
+                          at {job.company_name || "N/A"}
+                        </span>{" "}
+                        <span className="job-added-date">
+                          📅 Added {getDaysAgo(job.created_at)}
+                        </span>
+                      </div>
+                    </div>
                   </div>
+
                   <div className="job-actions d-flex align-items-center">
                     {/* Copy ID Button */}
                     <Button

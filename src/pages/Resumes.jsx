@@ -13,6 +13,16 @@ import {
 import { Modal, Button, Form, Spinner, Alert } from "react-bootstrap";
 import "./style/Resumes.css";
 
+const getDaysAgo = (createdAt) => {
+  const createdDate = new Date(createdAt);
+  const now = new Date();
+  const diffMs = now - createdDate;
+  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+  if (diffDays === 0) return "Today";
+  if (diffDays === 1) return "1 day ago";
+  return `${diffDays} days ago`;
+};
+
 function Resumes() {
   const [resumes, setResumes] = useState([]);
   const [file, setFile] = useState(null);
@@ -462,6 +472,9 @@ function Resumes() {
                   }}
                 />
                 <strong>{resume.title}</strong>
+                <span className="resume-added-date">
+                  📅 Added {getDaysAgo(resume.created_at)}
+                </span>
               </div>
               <div className="resume-actions">
                 <button

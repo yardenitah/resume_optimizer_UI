@@ -84,6 +84,16 @@
   gap: 1rem;
 }
 
+.job-added-date {
+  font-size: 0.85rem;
+  color: #6c757d; /* Bootstrap's text-muted */
+  margin-left: 45px; /* 👈 push it further to the right */
+  white-space: nowrap; /* 👈 prevent line break */
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
 /* Responsive design: reduce card spacing on smaller screens */
 @media (max-width: 768px) {
   .jobs-list {
