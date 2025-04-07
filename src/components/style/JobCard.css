@@ -1,0 +1,22 @@
+/* my-app/src/components/style/JobCard.css */
+
+.important-points-container {
+  background-color: #f8f9fa;
+  padding: 12px;
+  border-radius: 6px;
+  border: 1px solid #dee2e6;
+}
+
+.important-point-item {
+  display: flex;
+  align-items: start;
+  padding: 6px 0;
+  font-size: 0.95rem;
+}
+
+.important-point-item .icon {
+  color: #0d6efd;
+  margin-right: 8px;
+  font-size: 1rem;
+  line-height: 1.4;
+}

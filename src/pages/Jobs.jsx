@@ -42,18 +42,23 @@ function Jobs() {
   const [experienceLevel, setExperienceLevel] = useState("No Filter");
   const [jobTitles, setJobTitles] = useState("");
   const [maxJobs, setMaxJobs] = useState(10);
+
   // Search & Filter
   const [searchTerm, setSearchTerm] = useState("");
   const [filterCompany, setFilterCompany] = useState("");
+
   // Loading & Error
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+
   // LinkedIn States
   const [linkedinLoading, setLinkedinLoading] = useState(false);
   const [linkedinSuccess, setLinkedinSuccess] = useState(false);
+
   // Modal States
   const [showDeleteAllModal, setShowDeleteAllModal] = useState(false);
   const [showAddJobModal, setShowAddJobModal] = useState(false);
+
   // State to track which job ID was copied
   const [copiedJobId, setCopiedJobId] = useState(null);
 
@@ -68,18 +73,7 @@ function Jobs() {
     }
   };
 
-  // Initialize LinkedIn loading state from local storage
-  useEffect(() => {
-    const savedLoadingState = localStorage.getItem("linkedinLoading");
-    if (savedLoadingState === "true") {
-      setLinkedinLoading(true);
-    }
-  }, []);
-
-  // Persist `linkedinLoading` state to local storage
-  useEffect(() => {
-    localStorage.setItem("linkedinLoading", linkedinLoading);
-  }, [linkedinLoading]);
+  // Removed localStorage syncing for linkedinLoading to avoid infinite spinner on reload
 
   useEffect(() => {
     fetchJobs();
@@ -114,10 +108,6 @@ function Jobs() {
       formData.append("experience_level", experienceLevelValue);
       jobTitlesArray.forEach((title) => formData.append("job_titles", title));
 
-      for (const [key, value] of formData.entries()) {
-        console.log(key, value);
-      }
-
       await axiosInstance.post("/jobs/linkedin/search", formData);
 
       setLinkedinSuccess(true);
@@ -130,7 +120,6 @@ function Jobs() {
       setExperienceLevel("No Filter");
       setJobTitles("");
       setMaxJobs(10);
-      fetchJobs();
     } catch (err) {
       console.error("Failed to search & save LinkedIn jobs:", err);
       setError(
@@ -140,7 +129,6 @@ function Jobs() {
       alert(err.response?.data?.detail || "LinkedIn search failed");
     } finally {
       setLinkedinLoading(false);
-      localStorage.removeItem("linkedinLoading"); // Clear from local storage
     }
   };
 

@@ -191,11 +191,18 @@ function Resumes() {
   // Helper: format analysis text
   // ============================
   function formatAnalysisResult(analysisText) {
-    if (!analysisText) return "";
-    return analysisText
-      .replace("1)", "1)\n")
-      .replace("2)", "2)\n")
-      .replace("3)", "3)\n");
+    if (!analysisText) return [];
+
+    // Use regex to split based on "1)", "2)", "3)"
+    const sections = analysisText.split(/(?=\d\)\s)/g); // keep the number prefix
+    return sections.map((section) => {
+      const labelMatch = section.match(/^(\d\))\s?(.*?):/); // e.g. "1) Emphasize/Improve:"
+      if (!labelMatch) return { label: "", text: section.trim() };
+
+      const label = labelMatch[2]; // e.g. Emphasize/Improve
+      const text = section.slice(labelMatch[0].length).trim(); // remaining text after label
+      return { label, text };
+    });
   }
 
   // ============================
@@ -588,7 +595,6 @@ function Resumes() {
           {bestMatchResult && (
             <div className="alert alert-success mt-3">
               <h5>Best Resume:</h5>
-              <p>ID: {bestMatchResult.best_resume.id}</p>
               <p>Title: {bestMatchResult.best_resume.title}</p>
               <p>Score: {bestMatchResult.best_resume.score}</p>
               <button
@@ -603,7 +609,7 @@ function Resumes() {
               <h5>All Resumes with Scores:</h5>
               {bestMatchResult.all_resumes.map((r) => (
                 <div key={r.id}>
-                  Resume ID: {r.id}, Title: {r.title}, Score: {r.score}
+                  Title: {r.title}, Score: {r.score}
                 </div>
               ))}
             </div>
@@ -621,15 +627,16 @@ function Resumes() {
                 className="form-control"
                 value={typedResumeId}
                 onChange={(e) => setTypedResumeId(e.target.value)}
-                onBlur={handleResumeIdBlur} // <--- (NEW)
+                onBlur={handleResumeIdBlur}
+                onPaste={(e) => {
+                  // Wait a short moment for paste content to be set in state
+                  setTimeout(() => {
+                    handleResumeIdBlur();
+                  }, 0);
+                }}
                 placeholder="Paste resume here"
                 required
               />
-              <small className="text-muted">
-                Paste the resume ID here, then click or tab out.
-                <br />
-                We'll fetch the title and show it in this field if valid.
-              </small>
             </div>
 
             <div className="mb-3">
@@ -679,10 +686,19 @@ function Resumes() {
           </form>
 
           {/* Show Analysis Result */}
-          {analysisResult && (
+          {Array.isArray(analysisResult) && analysisResult.length > 0 && (
             <div className="alert alert-info mt-3">
               <strong>Analysis Result:</strong>
-              <p>{analysisResult}</p>
+              <div className="mt-2">
+                {analysisResult.map((section, idx) => (
+                  <div key={idx} style={{ marginBottom: "15px" }}>
+                    <strong>
+                      {idx + 1}) {section.label}:
+                    </strong>
+                    <p style={{ marginTop: "5px" }}>{section.text}</p>
+                  </div>
+                ))}
+              </div>
             </div>
           )}
         </div>

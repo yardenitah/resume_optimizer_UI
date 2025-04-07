@@ -1,7 +1,9 @@
+// my-app/src/components/JobCard.jsx
 import React, { useState, useEffect } from "react";
 import axiosInstance from "../utils/axiosInstance";
 import { FiDownload, FiExternalLink } from "react-icons/fi";
 import { Modal, Button, Spinner, Alert } from "react-bootstrap";
+import "./style/JobCard.css";
 
 function JobCard({ job, onClose }) {
   const token = localStorage.getItem("token");
@@ -16,6 +18,11 @@ function JobCard({ job, onClose }) {
   const [isAddingToResume, setIsAddingToResume] = useState(false);
   const [addToResumeError, setAddToResumeError] = useState("");
   const [addToResumeSuccess, setAddToResumeSuccess] = useState("");
+
+  // to manage toggle mode and fetched points
+  const [showPoints, setShowPoints] = useState(false);
+  const [importantPoints, setImportantPoints] = useState([]);
+  const [isLoadingPoints, setIsLoadingPoints] = useState(false);
 
   // Fetch the recommended resume title if best_resume_id is present
   useEffect(() => {
@@ -35,6 +42,24 @@ function JobCard({ job, onClose }) {
       fetchRecommendedResumeTitle(job.best_resume_id);
     }
   }, [job?.best_resume_id, token]);
+
+  const handleToggleImportantPoints = async () => {
+    if (!showPoints && importantPoints.length === 0) {
+      setIsLoadingPoints(true);
+      try {
+        const res = await axiosInstance.get(`/jobs/jobpoint/${job._id}`, {
+          headers: { Authorization: token },
+        });
+        setImportantPoints(res.data.important_points);
+      } catch (err) {
+        console.error("Failed to fetch important points:", err);
+        alert("Unable to load important points.");
+      } finally {
+        setIsLoadingPoints(false);
+      }
+    }
+    setShowPoints((prev) => !prev);
+  };
 
   const handleDownloadResume = async (resumeId) => {
     setIsDownloading(true);
@@ -96,10 +121,43 @@ function JobCard({ job, onClose }) {
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <p>
-          <strong>Job Description:</strong>
-        </p>
-        <p>{job.job_description || "No description provided."}</p>
+        <div className="mb-3">
+          <div className="d-flex justify-content-between align-items-center">
+            <strong>
+              {showPoints ? "Important Points" : "Job Description"}:
+            </strong>
+            <Button
+              variant="outline-secondary"
+              size="sm"
+              onClick={handleToggleImportantPoints}
+            >
+              {showPoints ? "Show Description" : "Show Important Points"}
+            </Button>
+          </div>
+          {isLoadingPoints ? (
+            <Spinner animation="border" size="sm" className="mt-2" />
+          ) : showPoints ? (
+            <div className="important-points-container mt-2">
+              {importantPoints.length > 0 ? (
+                importantPoints.map((point, index) => (
+                  <div className="important-point-item" key={index}>
+                    <span className="icon">📌</span>
+                    <span>{point}</span>
+                  </div>
+                ))
+              ) : (
+                <div className="important-point-item text-muted">
+                  <span className="icon">ℹ️</span>
+                  <span>No important points available.</span>
+                </div>
+              )}
+            </div>
+          ) : (
+            <p className="mt-2">
+              {job.job_description || "No description provided."}
+            </p>
+          )}
+        </div>
 
         {job.job_link && (
           <p>
@@ -113,12 +171,10 @@ function JobCard({ job, onClose }) {
         {job.best_resume_id ? (
           <div className="mt-4">
             <Alert variant="success">
-              {/* Display the recommended resume's title instead of ID */}
               <strong>Recommended Resume:</strong>{" "}
               {recommendedResumeTitle || "(Loading Title...)"}
             </Alert>
 
-            {/* Show errors/success for the "Add to Resume" action */}
             {downloadError && <Alert variant="danger">{downloadError}</Alert>}
             {addToResumeError && (
               <Alert variant="danger">{addToResumeError}</Alert>
@@ -127,7 +183,6 @@ function JobCard({ job, onClose }) {
               <Alert variant="success">{addToResumeSuccess}</Alert>
             )}
 
-            {/* Download Recommended Resume Button */}
             <Button
               variant="primary"
               className="me-3"
@@ -153,7 +208,6 @@ function JobCard({ job, onClose }) {
               )}
             </Button>
 
-            {/* Add This Job to Recommended Resume Button */}
             <Button
               variant="success"
               onClick={handleAddJobToResume}
