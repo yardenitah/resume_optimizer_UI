@@ -9,7 +9,7 @@ console.log("Imported getAuthHeader:", getAuthHeader); // Debugging log
 // });
 
 const axiosInstance = axios.create({
-  baseURL: "http://18.184.13.142:8000/api", // Your EC2 public IP
+  baseURL: "https://devedxtuxb8gp.cloudfront.net/api", // Your EC2 public IP
 });
 
 // Add a request interceptor to include Authorization header
