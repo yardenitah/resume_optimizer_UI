@@ -200,11 +200,15 @@ function Jobs() {
       fetchJobs();
       setShowAddJobModal(false); // Close modal
     } catch (err) {
-      console.error("Failed to save job:", err);
-      setError(
-        err.response?.data?.detail ||
-          "Failed to save job. Please ensure all required fields are filled correctly."
-      );
+      if (err.response?.status === 409) {
+        alert("This job already exists.");
+      } else {
+        console.error("Failed to save job:", err);
+        setError(
+          err.response?.data?.detail ||
+            "Failed to save job. Please ensure all required fields are filled correctly."
+        );
+      }
     } finally {
       setIsLoading(false);
     }
